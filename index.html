@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Amazon Price Tracker MVP</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Amazon Price Tracker</h2>
+  <canvas id="myChart"></canvas>
+
+  <script>
+    // ✅ 여기 Google Sheet JSON URL만 넣으면 차트가 보임
+    const sheetURL = "YOUR_SHEET_JSON_URL";  
+
+    fetch(sheetURL)
+      .then(res => res.json())
+      .then(data => {
+        const rows = data.feed.entry;
+        const prices = [];
+        const times = [];
+
+        rows.forEach((r) => {
+          const text = r.gs$cell.$t;
+          if (text.includes(",")) {
+            const parts = text.split(",");
+            prices.push(parseFloat(parts[1]));
+            times.push(parts[2]);
+          }
+        });
+
+        new Chart(document.getElementById("myChart"), {
+          type: "line",
+          data: {
+            labels: times,
+            datasets: [{
+              label: "Price",
+              data: prices,
+              borderWidth: 2
+            }]
+          }
+        });
+      });
+  </script>
+</body>
+</html>
